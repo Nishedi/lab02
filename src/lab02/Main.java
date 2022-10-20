@@ -64,4 +64,4 @@ public class Main {
 
 
 
-}
+}//zmienic funkcje ktora sprawdza dopuszczalnosc, nalezy najpierw wyliczyc ile jest rozwiazan i w zaleznosci od tego jaka to liczba uruchomic brute lub random, pozmieniac nazwy zmiennych, jary
