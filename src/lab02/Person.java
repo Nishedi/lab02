@@ -30,7 +30,6 @@ public class Person {
         return id;
     }
     public int satisfaction(int numberoftaste/*numer smaku*/, int volume /*pojemność*/){
-        //wyznaczyć pozucje
         int k =-1 ;
         for(int i = 0;i<=preferention.size()-1;i++){
             if(numberoftaste==preferention.get(i)){

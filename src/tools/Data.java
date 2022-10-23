@@ -4,14 +4,18 @@ import lab02.Person;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Data {
-    public static ArrayList<String> read_data(String name) throws Exception {
+
+    public static ArrayList<String> read_data(URL url) throws Exception {
         ArrayList<String> list = new ArrayList<>();
         BufferedReader ReadF = null;
-        System.out.println(System.getProperty("user.dir"));
-        ReadF = new BufferedReader(new FileReader(name));
+
+        ReadF = new BufferedReader(new InputStreamReader(url.openStream()));
+
         String numstring = ReadF.readLine();
         try {
             while (numstring != null) {
@@ -24,10 +28,13 @@ public class Data {
         ReadF.close();
 
         for(String i: list){
-            System.out.println(i);
+            //System.out.println(i);
         }
         return list;
     }
+
+
+
 
     public static ArrayList<Person> load_data_person(ArrayList<String> list){
         ArrayList<Person> listint = new ArrayList<>();

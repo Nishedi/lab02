@@ -1,19 +1,16 @@
 package lab02;
-
 import tools.*;
 
-import javax.swing.*;
+import java.net.URL;
 import java.util.*;
-import java.util.Collections;
-import java.util.List;
 
-
-//Konrad Pempera 263948 10.10.2022
+//Konrad Pempera 263948 22.10.2022
 public class Main {
 
-    public static void randomsearch(int[] tabb, ParetoSet pareto, Problem problem) {
+
+    public static void randomsearch(int[] tabb, BestSolution pareto, Problem problem) {
         Random rand = new Random();
-        for(int j = 0; j<=10000000; j++){
+            for(int j = 0; j<=10000000; j++){
             for(int i = 0; i<=problem.list.size()-1;i++){
                 int x = rand.nextInt(1,problem.list.get(i).size()+1);
                 tabb[i+1]=x;
@@ -27,7 +24,7 @@ public class Main {
         }
     }
 
-    public static void bruteforce(int[] tabb, ParetoSet pareto, Systemofcalculating calcute, Problem problem){
+    public static void bruteforce(int[] tabb, BestSolution pareto, Systemofcalculating calcute, Problem problem){
         for(int j =0; j<=calcute.numberofsolutions();j++) {
             calcute.nextsolution();
             for(int i = 1; i<=calcute.n; i++){
@@ -45,23 +42,51 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception {
+        Main obj = new Main();//Main-nazwa klasy głównej
+        Class class1 = obj.getClass();
+        URL urldrinks = class1.getResource("drinks.txt");
+        URL urlpersons=class1.getResource("person.txt");
+
+
+        Map<Integer, ArrayList<Drink>> map = new HashMap<>();
+
     String namedrinks = "drinks.txt";
     String namepersons= "person.txt";
 
     Problem problem = new Problem();
-    problem.loaddatafromfile(namedrinks, namepersons);
+    problem.loaddatafromfile(urldrinks, urlpersons);
 
-    int[] tabb = new int[11];
-
+        int[] assign = new int[11];
         Systemofcalculating calcute = new Systemofcalculating(problem.list);
-        ParetoSet pareto = new ParetoSet();
-        //randomsearch(tabb, pareto, problem);
-        int x = calcute.numberofsolutions();
-        bruteforce(tabb, pareto, calcute, problem);
+        BestSolution bestsolution = new BestSolution();
+        int n = calcute.numberofsolutions();
+        if(n<50000000){
+            bruteforce(assign, bestsolution, calcute, problem);
+        }else{
+            randomsearch(assign, bestsolution, problem);
+        }
 
-        pareto.writetoconsole();
-    }
-
-
-
-}//zmienic funkcje ktora sprawdza dopuszczalnosc, nalezy najpierw wyliczyc ile jest rozwiazan i w zaleznosci od tego jaka to liczba uruchomic brute lub random, pozmieniac nazwy zmiennych, jary
+        assign= bestsolution.restoreassigment();
+        if(assign==null){
+            System.out.println("Not everyone can get drinks");
+        }else {
+            //drukowanie wyników
+            for (int i = 1; i <= assign.length - 1; i++) {
+                if (map.containsKey(assign[i]) == false) {
+                    map.put(assign[i], new ArrayList<Drink>());
+                }
+                map.get(assign[i]).add(problem.getDrink(i));
+            }
+            for (int i = 1; i <= problem.numberofperson(); i++) {
+                System.out.print(problem.getperson(i).id + " ");
+                if (map.containsKey(i) == true) {
+                    for (Drink drink : map.get(i)) {
+                        System.out.print("(" + drink.id + "," + drink.volume + ")" + " ");
+                    }
+                }
+                System.out.println("");
+            }
+            bestsolution.bestsolution.writetoconsole();
+        }
+        }
+}

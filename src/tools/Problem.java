@@ -3,22 +3,43 @@ package tools;
 import lab02.Drink;
 import lab02.Person;
 
+import java.net.URL;
 import java.util.*;
 
 public class Problem {
-    public static ArrayList<Drink> listofdrinks=new ArrayList<>();
-    public static ArrayList<Person> listofpersons=new ArrayList<>();
+    private  ArrayList<Drink> listofdrinks=new ArrayList<>();
+    private  ArrayList<Person> listofpersons=new ArrayList<>();
+    public int numberofperson(){
+        return listofpersons.size();
+    }
+
+
+
+    public Person getperson(int i){
+        return listofpersons.get(i - 1);
+    }
+
+    public Drink getDrink(int i){
+        return listofdrinks.get(i-1);
+    }
+
+    public int numberofdrink(){
+        return listofdrinks.size();
+    }
 
     public ArrayList<ArrayList<Integer>> list = new ArrayList<>();
-    public static int totalsatisfaction(int[] tab){
+    public  int totalsatisfaction(int[] assign){
         int n = listofdrinks.size();
         int sum=0;
         for(int i =1 ; i<=n; i++) {
-            sum = sum + listofpersons.get(tab[i] - 1).satisfaction(listofdrinks.get(i - 1).taste, listofdrinks.get(i - 1).volume);
+            sum = sum + listofpersons.get(assign[i] - 1).satisfaction(listofdrinks.get(i - 1).taste, listofdrinks.get(i - 1).volume);
         }
         return sum;
     }
-    public void loaddatafromfile(String namedrinks, String namepersons) throws Exception {
+
+
+
+    public void loaddatafromfile(URL namedrinks, URL namepersons) throws Exception {
         ArrayList<String> listnonparse_drinks=Data.read_data(namedrinks);
         for(String s: listnonparse_drinks){
             listofdrinks.add(new Drink(s));
@@ -43,7 +64,8 @@ public class Problem {
 
 
     }
-    public static int totaldissatisfaction(int[] tab){
+
+    public int totaldissatisfaction(int[] assign){
         int n = listofdrinks.size();
         int sum = 0;
         int[] firsttastefullfill= new int[listofpersons.size()+1];
@@ -51,8 +73,8 @@ public class Problem {
             firsttastefullfill[i]=0;
         }
         for(int i = 1; i<=n;i++) {
-            int person = tab[i];
-            int preferention =listofpersons.get(tab[i]-1).preferention.get(0);
+            int person = assign[i];
+            int preferention =listofpersons.get(assign[i]-1).preferention.get(0);
             int taste = listofdrinks.get(i-1).taste;
             int volume = listofdrinks.get(i-1).volume;
             if(preferention==taste) firsttastefullfill[person]=volume;
@@ -66,17 +88,33 @@ public class Problem {
         return sum;
     }
 
-    public static boolean admissibility(int[] tab){
-        int n = listofdrinks.size();
-        for(int i = 1; i<=n;i++){
+    public boolean admissibility(int[] assign){
+        boolean difftaste = checkdifferencesoftasteforall(assign);
+        boolean ifallgetdrink = ifallgetdrink(assign,listofpersons.size(), listofdrinks.size() );
+        return (difftaste && ifallgetdrink);
+    }
 
-            if(listofpersons.get(tab[i]-1).satisfaction(listofdrinks.get(i - 1).taste, listofdrinks.get(i - 1).volume)==-1)
-                return false;
+
+    public boolean ifallgetdrink(int[] assign, int numberofpersons, int numberofdrinks){
+        int[] didget = new int[numberofpersons+1];
+        for(int i = 1; i<=8; i++){
+            didget[i-1]=0;
         }
+        for(int i = 1; i <= numberofdrinks; i++){
+            didget[assign[i]]=1;
+
+        }
+        for(int i = 1; i<= numberofpersons; i++){
+            if(didget[i]==0)return false;
+        }
+        return true;
+    }
+    public boolean checkdifferencesoftasteforall(int[] assign){
+        int n = listofdrinks.size();
 
         Set<Integer> set = new HashSet<>();
         for(int i =1; i<=n;i++ ){
-            int person = tab[i];
+            int person = assign[i];
             int taste = listofdrinks.get(i-1).taste;
             int x = person *1000 + taste;
             if(set.contains(x))
