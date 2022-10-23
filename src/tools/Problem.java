@@ -97,7 +97,7 @@ public class Problem {
 
     public boolean ifallgetdrink(int[] assign, int numberofpersons, int numberofdrinks){
         int[] didget = new int[numberofpersons+1];
-        for(int i = 1; i<=8; i++){
+        for(int i = 1; i<=numberofperson(); i++){
             didget[i-1]=0;
         }
         for(int i = 1; i <= numberofdrinks; i++){

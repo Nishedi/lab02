@@ -8,34 +8,34 @@ import java.util.*;
 public class Main {
 
 
-    public static void randomsearch(int[] tabb, BestSolution pareto, Problem problem) {
+    public static void randomsearch(int[] assign, BestSolution bestSolution, Problem problem) {
         Random rand = new Random();
-            for(int j = 0; j<=10000000; j++){
+        for(int j = 0; j<=100000000; j++){
             for(int i = 0; i<=problem.list.size()-1;i++){
-                int x = rand.nextInt(1,problem.list.get(i).size()+1);
-                tabb[i+1]=x;
+                int x = rand.nextInt(0,problem.list.get(i).size());
+                assign[i+1]=problem.list.get(i).get(x);
             }
-            boolean k=problem.admissibility(tabb );
+            boolean k=problem.admissibility(assign );
             if(k==false)continue;
-            int satisfaction = problem.totalsatisfaction(tabb);
-            int dissatisfaction = problem.totaldissatisfaction(tabb);
-            Solution solution = new Solution(satisfaction, dissatisfaction, tabb);
-            pareto.update(dissatisfaction, satisfaction, solution);
+            int satisfaction = problem.totalsatisfaction(assign);
+            int dissatisfaction = problem.totaldissatisfaction(assign);
+            Solution solution = new Solution(satisfaction, dissatisfaction, assign);
+            bestSolution.update(dissatisfaction, satisfaction, solution);
         }
     }
 
-    public static void bruteforce(int[] tabb, BestSolution pareto, Systemofcalculating calcute, Problem problem){
+    public static void bruteforce(int[] assign, BestSolution bestSolution, Systemofcalculating calcute, Problem problem){
         for(int j =0; j<=calcute.numberofsolutions();j++) {
             calcute.nextsolution();
             for(int i = 1; i<=calcute.n; i++){
-                tabb[i]=problem.list.get(i-1).get(calcute.numbers[i]);
+                assign[i]=problem.list.get(i-1).get(calcute.numbers[i]);
             }
-            boolean k=problem.admissibility(tabb);
+            boolean k=problem.admissibility(assign);
             if(k==true) {
-                int satisfaction = problem.totalsatisfaction(tabb);
-                int dissatisfaction = problem.totaldissatisfaction(tabb);
-                Solution solution = new Solution(satisfaction, dissatisfaction, tabb);
-                pareto.update(dissatisfaction, satisfaction, solution);
+                int satisfaction = problem.totalsatisfaction(assign);
+                int dissatisfaction = problem.totaldissatisfaction(assign);
+                Solution solution = new Solution(satisfaction, dissatisfaction, assign);
+                bestSolution.update(dissatisfaction, satisfaction, solution);
             }
         }
     }
@@ -56,11 +56,11 @@ public class Main {
     Problem problem = new Problem();
     problem.loaddatafromfile(urldrinks, urlpersons);
 
-        int[] assign = new int[11];
+        int[] assign = new int[problem.numberofdrink()+1];//zamiast 11 powinno być numberofdrinks+1
         Systemofcalculating calcute = new Systemofcalculating(problem.list);
         BestSolution bestsolution = new BestSolution();
         int n = calcute.numberofsolutions();
-        if(n<50000000){
+        if(n<500000){
             bruteforce(assign, bestsolution, calcute, problem);
         }else{
             randomsearch(assign, bestsolution, problem);
@@ -71,7 +71,7 @@ public class Main {
             System.out.println("Not everyone can get drinks");
         }else {
             //drukowanie wyników
-            for (int i = 1; i <= assign.length - 1; i++) {
+            for (int i = 1; i <= problem.numberofdrink(); i++) {
                 if (map.containsKey(assign[i]) == false) {
                     map.put(assign[i], new ArrayList<Drink>());
                 }
